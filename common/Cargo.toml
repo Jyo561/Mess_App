@@ -1,0 +1,16 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+default = []
+# This feature will be enabled ONLY by the backend
+backend = ["dep:poem-openapi"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["serde", "v4", "js"] }
+poem-openapi = { version = "5.1.16", features=["chrono"],optional=true}
+
