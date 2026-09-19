@@ -55,7 +55,7 @@ fn app() -> Html {
                                 style="width: 100%; padding: 10px; background: #e0e0e0;">
                             {"Submit Yes"}
                         </button>
-                    </div>
+                   </div>
                 }
             })}
         </div>

@@ -44,14 +44,14 @@ impl AttendanceController {
 #[OpenApi]
 impl AttendanceController {
     /// Get available meals for today (authenticated)
-    #[oai(path = "/api/meals", method = "get")]
+    #[oai(path = "/meals", method = "get")]
     async fn get_meals(&self, _auth: JwtAuth) -> MealsResponse {
         let meals = self.service.get_available_meals_for_today();
         MealsResponse::Ok(Json(meals))
     }
 
     /// Submit attendance response for a meal
-    #[oai(path = "/api/entry", method = "post")]
+    #[oai(path = "/entry", method = "post")]
     async fn submit_entry(&self, auth: JwtAuth, body: Json<AttendanceEntry>) -> EntryResponse {
         let requester_id = &auth.0.sub;
         let is_admin = auth.0.is_admin;
@@ -65,7 +65,7 @@ impl AttendanceController {
     }
 
     /// Get recent attendance history for the logged-in member
-    #[oai(path = "/api/history", method = "get")]
+    #[oai(path = "/history", method = "get")]
     async fn get_history(&self, auth: JwtAuth) -> HistoryResponse {
         let requester_id = &auth.0.sub;
 
