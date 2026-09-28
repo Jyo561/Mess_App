@@ -8,7 +8,7 @@ use poem_openapi::{Object,Enum};
 #[cfg_attr(feature = "backend", derive(Enum))]
 pub enum MealType { Breakfast, Lunch, Dinner }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "backend", derive(Object))]
 pub struct AttendanceEntry {
     pub id: Option<i64>,
@@ -19,7 +19,7 @@ pub struct AttendanceEntry {
     pub remarks: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct UserProfile {
     pub user_id: String,
     pub name: String,
@@ -50,7 +50,7 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "backend", derive(Object))]
 pub struct LoginResponse {
     pub token: String,

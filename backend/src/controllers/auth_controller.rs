@@ -52,6 +52,7 @@ impl AuthController {
 
     #[oai(path = "/auth/signup", method = "post")]
     async fn signup(&self, body: Json<SignupRequest>) -> SignupResult {
+        //println!("{}", body.0);
         match self.auth_service.signup(body.0).await {
             Ok(response) => SignupResult::Created(Json(response)),
             Err(AuthError::ValidationError(msg)) => SignupResult::BadRequest(Json(msg)),

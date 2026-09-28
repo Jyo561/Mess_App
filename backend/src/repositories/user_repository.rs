@@ -1,5 +1,6 @@
-use libsql::{Connection, Error as LibSqlError};
+use libsql::{params, Connection, Error as LibSqlError};
 use std::sync::Arc;
+
 
 #[derive(Debug, Clone)]
 pub struct UserRecord {
@@ -47,6 +48,7 @@ impl UserRepository {
     }
 
     pub async fn find_by_ic(&self, ic_input: &str) -> Result<Option<UserRecord>, LibSqlError> {
+        
         let trimmed = ic_input.trim();
 
         // Query checks either the text ID or matching numeric IC No
@@ -58,8 +60,13 @@ impl UserRepository {
                  WHERE id = ?1 OR CAST(ic_no AS TEXT) = ?1",
             )
             .await?;
+        
+        println!("Hello4-1");
 
-        let mut rows = stmt.query([trimmed]).await?;
+
+        let mut rows = stmt.query(params![trimmed]).await?;
+        
+        println!("Hello4-2");
 
         if let Some(row) = rows.next().await? {
             Ok(Some(UserRecord {
@@ -75,5 +82,7 @@ impl UserRepository {
         } else {
             Ok(None)
         }
+        //println!("Hello4-3");
+
     }
 }
