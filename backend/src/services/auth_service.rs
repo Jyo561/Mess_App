@@ -123,23 +123,23 @@ impl AuthService {
     pub async fn signup(&self, req: SignupRequest) -> Result<LoginResponse, AuthError> {
         println!("Hello");
         let ic_str = req.ic_no.to_string();
-        println!("Hello1");
+        //println!("Hello1");
 
         // 1. Basic validation
         if req.name.trim().is_empty() {
             return Err(AuthError::ValidationError("Name cannot be empty".into()));
         }
-        println!("Hello2");
+        //println!("Hello2");
 
         if req.password.len() < 6 {
             return Err(AuthError::ValidationError("Password must be at least 6 characters".into()));
         }
-        println!("Hello3");
+        //println!("Hello3");
 
         if req.ic_no <= 0 {
             return Err(AuthError::ValidationError("Invalid IC Number".into()));
         }
-        println!("Hello4");
+        //println!("Hello4");
 
         // 2. Check if IC No already exists
         let existing = self.user_repo.find_by_ic(&ic_str).await.map_err(|e| {
@@ -147,14 +147,14 @@ impl AuthService {
             AuthError::Internal("Database error".into())
         })?;
 
-        println!("Hell5");
+        //println!("Hell5");
 
 
         if existing.is_some() {
             return Err(AuthError::UserAlreadyExists);
         }
 
-        println!("Hello6");
+        //println!("Hello6");
 
 
         // 3. Hash password using Argon2
@@ -163,7 +163,7 @@ impl AuthService {
             AuthError::Internal("Encryption error".into())
         })?;
 
-        println!("Hello7");
+        //println!("Hello7");
 
         // 4. Build record (is_admin defaults to false for public signups)
         let new_user = UserRecord {

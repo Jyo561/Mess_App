@@ -1,14 +1,14 @@
 use common::{AttendanceEntry, MealType};
 use chrono::NaiveDate;
-use libsql::{Connection, Error as LibSqlError};
+use libsql::{Connection, Database, Error as LibSqlError};
 use std::sync::Arc;
 
 pub struct AttendanceRepository {
-    db: Arc<Connection>,
+    db: Arc<Database>,
 }
 
 impl AttendanceRepository {
-    pub fn new(db: Arc<Connection>) -> Self {
+    pub fn new(db: Arc<Database>) -> Self {
         Self { db }
     }
 
@@ -21,9 +21,10 @@ impl AttendanceRepository {
         };
 
         let date_str = entry.date.format("%Y-%m-%d").to_string();
+        
+        let conn = self.db.connect()?;
 
-        let mut stmt = self
-            .db
+        let mut stmt = conn
             .prepare(
                 "INSERT INTO entries (user_id, meal_type, date, response, remarks)
                  VALUES (?1, ?2, ?3, ?4, ?5)",
@@ -44,8 +45,9 @@ impl AttendanceRepository {
 
     /// Fetches the attendance history for a specific user (ordered newest first)
     pub async fn get_user_history(&self, user_id: &str, limit: u32) -> Result<Vec<AttendanceEntry>, LibSqlError> {
-        let mut stmt = self
-            .db
+        let conn = self.db.connect()?;
+
+        let mut stmt = conn
             .prepare(
                 "SELECT id, user_id, meal_type, date, response, remarks 
                  FROM entries 

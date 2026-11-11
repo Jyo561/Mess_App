@@ -22,13 +22,13 @@ use crate::services::{auth_service::AuthService, attendance_service::AttendanceS
 
 
 #[tokio::main]
-async fn main() -> Result<(), std::io::Error> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     dotenvy::dotenv().ok();
     // tracing_subscriber::fmt::init();
 
     // 1. Database
-    let conn = db::get_db_conn().await;
+    let conn = db::get_db().await?;
     let shared_db = Arc::new(conn);
 
     // 2. Instantiate Repositories -> Services -> Controllers
@@ -64,6 +64,8 @@ async fn main() -> Result<(), std::io::Error> {
 
     Server::new(TcpListener::bind("0.0.0.0:3000"))
         .run(app)
-        .await
+        .await?; // <-- Notice the '?;'
+
+    Ok(())      
 
 }

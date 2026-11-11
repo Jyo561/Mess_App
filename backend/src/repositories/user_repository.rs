@@ -1,4 +1,4 @@
-use libsql::{params, Connection, Error as LibSqlError};
+use libsql::{params, Connection, Database, Error as LibSqlError};
 use std::sync::Arc;
 
 
@@ -14,18 +14,20 @@ pub struct UserRecord {
     pub is_admin: bool,
 }
 
+
+
 pub struct UserRepository {
-    db: Arc<Connection>,
+    db: Arc<Database>,
 }
 
 impl UserRepository {
-    pub fn new(db: Arc<Connection>) -> Self {
+    pub fn new(db: Arc<Database>) -> Self {
         Self { db }
     }
 
     pub async fn create(&self, user: &UserRecord) -> Result<(), LibSqlError> {
-        let mut stmt = self
-            .db
+        let conn = self.db.connect()?;
+        let mut stmt = conn
             .prepare(
                 "INSERT INTO users (id, ic_no, name, email, password_hash, designation, ci, is_admin)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
@@ -49,11 +51,11 @@ impl UserRepository {
 
     pub async fn find_by_ic(&self, ic_input: &str) -> Result<Option<UserRecord>, LibSqlError> {
         
+        let conn = self.db.connect()?;
         let trimmed = ic_input.trim();
 
         // Query checks either the text ID or matching numeric IC No
-        let mut stmt = self
-            .db
+        let mut stmt = conn
             .prepare(
                 "SELECT id, ic_no, name, email, password_hash, designation, ci, is_admin 
                  FROM users 
@@ -61,12 +63,18 @@ impl UserRepository {
             )
             .await?;
         
-        println!("Hello4-1");
+        //println!("Hello4-1");
 
 
-        let mut rows = stmt.query(params![trimmed]).await?;
+        let mut rows = match stmt.query(params![trimmed]).await {
+                    Ok(rows) => rows,
+                    Err(e) => {
+                        eprintln!("QUERY ERROR: {e:?}");
+                        return Err(e.into());
+                    }
+        };
         
-        println!("Hello4-2");
+        //println!("Hello4-2");
 
         if let Some(row) = rows.next().await? {
             Ok(Some(UserRecord {
